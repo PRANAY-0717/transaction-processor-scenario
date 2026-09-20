@@ -1,0 +1,37 @@
+# first we will name the workflow 
+name: Run Tests(Workflow A)
+
+# now we will define when the workflow has to be triggered 
+on:
+  pull_request:
+    branches:
+      - main
+
+# now we will create the jobs that have to be performed in the workflow 
+jobs:
+  run_tests:
+    # we will define the machine on which this particular job will run 
+    runs-on: ubuntu-latest
+
+    # now we will define the steps of this job 
+    steps:
+      # our first step is to copy the directory into ourt new server 
+      - name: Pull Current Directory 
+        uses: actions/checkout@v4
+
+      # now we will install python in ourt server
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # now we will install the required dependecies 
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # now we will run all the tests
+      - name: Run Tests
+        run: |
+          python -m pytest tests/
