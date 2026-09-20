@@ -39,7 +39,7 @@ jobs:
         run: |
           python -m pytest --cov=src --cov-fail-under=90 > coverage_report.txt
       # as we have to communicate the coverage through PR or step summary we have to continue the pipeline if it fasils as well
-        continue-on-fail: true
+        continue-on-error: true
 
       # now we will calculate the code coverage for it and store it for later use
       - name: Extract Coverage
@@ -61,7 +61,7 @@ jobs:
       - name: Create PR comment
         # for creating a comment on PR it needs access to token
         env:
-          GT_TOKEN=${{env.GITHUB_TOKEN}}
+          GH_TOKEN=${{env.GITHUB_TOKEN}}
         run: |
           gh pr comment ${{github.event.pull_request.number}} --body \
           '### COVERAGE REPORT
