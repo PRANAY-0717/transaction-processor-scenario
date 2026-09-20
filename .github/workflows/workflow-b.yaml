@@ -39,7 +39,7 @@ jobs:
         run: |
           python -m pytest --cov=src --cov-fail-under=90 > coverage_report.txt
       # as we have to communicate the coverage through PR or step summary we have to continue the pipeline if it fasils as well
-        continue-on-failure: true
+        continue-on-error: true
 
       # now we will calculate the code coverage for it and store it for later use
       - name: Extract Coverage
