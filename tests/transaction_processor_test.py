@@ -33,14 +33,14 @@ def test_calculate_total_basic():
     assert result == 200.0
 
 
-# def test_calculate_total_discount():
-#     """Test that a total strictly over 500 gets a 10% discount."""
-#     # Arrange
-#     price = 300
-#     quantity = 2
-#
-#     # Act
-#     result = calculate_total(price, quantity)
-#
-#     # Assert
-#     assert result == 550.0
+def test_calculate_total_discount():
+    """Test that a total strictly over 500 gets a 10% discount."""
+    # Arrange
+    price = 300
+    quantity = 2
+
+    # Act
+    result = calculate_total(price, quantity)
+
+    # Assert
+    assert result == 550.0
