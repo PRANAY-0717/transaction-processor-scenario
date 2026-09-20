@@ -1,0 +1,78 @@
+# we will create workflow b and name it 
+name: Enforce Coverage
+
+# now we will setup when it shall be triggered
+on:
+  pull_request:
+    branches:
+      - main
+
+# now we will define the jobs which has to be perfomed 
+jobs:
+  # we will name the job 
+  enforce_coverage: 
+    runs-on: ubuntu-latest
+
+    # as we will be making a pr comment so we need permision to write requests which we will grant the machine 
+    permissions:
+      pull-requests: write
+      contents: read
+
+    # now we will define the steps for the request 
+    steps:
+      # first we will pull teh working directory 
+
+      - name: Pull Current Directory
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install -U pip
+          pip install -r requirements.txt
+
+      #  now we will run the test suite again and this time check code coverage as well
+      - name: Coverage Check
+        id: coverage_check 
+        run: |
+          python -m pytest --cov=src --cov-fail-under=90 > coverage_report.txt
+      # as we have to communicate the coverage through PR or step summary we have to continue the pipeline if it fasils as well
+        continue-on-fail: true
+
+      # now we will calculate the code coverage for it and store it for later use
+      - name: Extract Coverage
+        run: |
+          PERCENTAGE=$(grep 'TOTAL' requirements.txt | awk '{print $NF}')
+          # now we will store this in a key-pair format in github env
+          echo "COVERAGE_RATE=$PERCENTAGE" >> $GITHUB_ENV
+
+      #  now we will communicate it through step summary first by using github_step_sumaary
+      - name: Create Step Summary
+        run: |
+          echo "The coverage rate after the previous commit is ${{env.COVERAGE_RATE}}" >> $GITHUB_SETP_SUMMARY
+          echo "Detailed View" >> $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMAMRY
+          cat coverage_report.txt >> $GITHUB_STEP_SUMMARY
+          echo "```" >> $GITHUB_STEP_SUMAMRY
+          
+      # now we will create a PR comment for teh same
+      - name: Create PR comment
+        # for creating a comment on PR it needs access to token
+        env:
+          GT_TOKEN=${{env.GITHUB_TOKEN}}
+        run: |
+          gh pr comment ${{github.event.pull_request.number}} --body \
+          '### COVERAGE REPORT
+          Your Coverage Precent is ${{env.COVERAGE_RATE}} and the minimum required is 90%'
+
+      # now we will make sure that the build is fail if ewarlier the coverage was less
+      - name: Block Pipeline
+        if: steps.coverage_check.outcome == 'failure'
+        run: |
+          echo 'Pipeline Blocked as the coverage is less then 90 %'
+          exit 1
+
+
+
