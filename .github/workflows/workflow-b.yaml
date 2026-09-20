@@ -44,24 +44,24 @@ jobs:
       # now we will calculate the code coverage for it and store it for later use
       - name: Extract Coverage
         run: |
-          PERCENTAGE=$(grep 'TOTAL' requirements.txt | awk '{print $NF}')
+          PERCENTAGE=$(grep 'TOTAL' coverage_report.txt | awk '{print $NF}')
           # now we will store this in a key-pair format in github env
           echo "COVERAGE_RATE=$PERCENTAGE" >> $GITHUB_ENV
 
       #  now we will communicate it through step summary first by using github_step_sumaary
       - name: Create Step Summary
         run: |
-          echo "The coverage rate after the previous commit is ${{env.COVERAGE_RATE}}" >> $GITHUB_SETP_SUMMARY
+          echo "The coverage rate after the previous commit is ${{env.COVERAGE_RATE}}" >> $GITHUB_STEP_SUMMARY
           echo "Detailed View" >> $GITHUB_STEP_SUMMARY
-          echo "```" >> $GITHUB_STEP_SUMAMRY
+          echo "```" >> $GITHUB_STEP_SUMMARY
           cat coverage_report.txt >> $GITHUB_STEP_SUMMARY
-          echo "```" >> $GITHUB_STEP_SUMAMRY
+          echo "```" >> $GITHUB_STEP_SUMMARY
           
       # now we will create a PR comment for teh same
       - name: Create PR comment
         # for creating a comment on PR it needs access to token
         env:
-          GH_TOKEN=${{env.GITHUB_TOKEN}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           gh pr comment ${{github.event.pull_request.number}} --body \
           '### COVERAGE REPORT
