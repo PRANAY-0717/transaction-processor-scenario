@@ -53,9 +53,9 @@ jobs:
         run: |
           echo "The coverage rate after the previous commit is ${{env.COVERAGE_RATE}}" >> $GITHUB_STEP_SUMMARY
           echo "Detailed View" >> $GITHUB_STEP_SUMMARY
-          echo "```" >> $GITHUB_STEP_SUMAMRY
+          echo "```" >> $GITHUB_STEP_SUMMARY
           cat coverage_report.txt >> $GITHUB_STEP_SUMMARY
-          echo "```" >> $GITHUB_STEP_SUMAMRY
+          echo "```" >> $GITHUB_STEP_SUMMARY
           
       # now we will create a PR comment for teh same
       - name: Create PR comment
