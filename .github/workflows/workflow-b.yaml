@@ -61,7 +61,7 @@ jobs:
       - name: Create PR comment
         # for creating a comment on PR it needs access to token
         env:
-          GH_TOKEN: ${{env.GITHUB_TOKEN}}
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           gh pr comment ${{github.event.pull_request.number}} --body \
           '### COVERAGE REPORT
